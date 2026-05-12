@@ -1,2 +1,2 @@
 # timebox
-Elon musk's Time Scheduling Box Project
+Elon Musk's Time Scheduling Box Project

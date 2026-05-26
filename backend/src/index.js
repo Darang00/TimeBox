@@ -16,7 +16,8 @@ const cors = require('cors');
 const pool = require('./db');
 
 // 라우터 불러오기
-const authRoutes = require('./routes/authRoutes');
+const authRoutes = require('./routes/authRoutes');       // Regarding Sign in, Sign up
+const timeboxRoutes = require('./routes/timeboxRoutes'); // Regarding Time Box
 
 // Express 앱 생성
 const app = express();
@@ -29,7 +30,8 @@ app.use(cors());          // 프론트엔드에서 API 호출 허용
 app.use(express.json());  // JSON 요청 파싱
 
 // 라우터 연결
-app.use('/api/auth', authRoutes);
+app.use('/api/auth', authRoutes);        // Regarding Sign in, Sign up
+app.use('/api/timebox', timeboxRoutes);  // Regarding Time Box
 
 // 서버 상태 확인용 API
 app.get('/', (req, res) => {

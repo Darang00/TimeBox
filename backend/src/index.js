@@ -15,6 +15,9 @@ const cors = require('cors');
 // DB 연결 불러오기 (./db/index.js)
 const pool = require('./db');
 
+// 라우터 불러오기
+const authRoutes = require('./routes/authRoutes');
+
 // Express 앱 생성
 const app = express();
 
@@ -25,6 +28,9 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());          // 프론트엔드에서 API 호출 허용
 app.use(express.json());  // JSON 요청 파싱
 
+// 라우터 연결
+app.use('/api/auth', authRoutes);
+
 // 서버 상태 확인용 API
 app.get('/', (req, res) => {
   res.json({ message: 'TimeBox Server is running! ✅' });
@@ -34,3 +40,11 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
   console.log(`서버 시작! 포트: ${PORT}`);
 });
+
+/* backend 구조
+authService.js     ← 1번째 (DB 직접 접근)
+authController.js  ← 2번째 (service 호출)
+authRoutes.js      ← 3번째 (controller 연결)
+authMiddleware.js  ← 4번째 (JWT 검증)
+index.js           ← 5번째 (routes 연결)
+*/

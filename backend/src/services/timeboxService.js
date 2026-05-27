@@ -14,12 +14,28 @@ const getOrCreateSchedule = async (userId, date) => {
     return existing.rows[0].schedule_id;
   }
 
+  // ON CONFLICT DO NOTHING - 중복이면 무시하고 기존 값 반환
   const created = await pool.query(
-    'INSERT INTO daily_schedule (user_id, schedule_date) VALUES ($1, $2) RETURNING schedule_id',
+    `INSERT INTO daily_schedule (user_id, schedule_date) 
+     VALUES ($1, $2) 
+     ON CONFLICT (user_id, schedule_date) DO NOTHING
+     RETURNING schedule_id`,
     [userId, date]
   );
 
-  return created.rows[0].schedule_id;
+
+  if (created.rows.length > 0) {
+    return created.rows[0].schedule_id;
+  }
+
+  // 동시 요청으로 INSERT가 무시된 경우 다시 조회
+  const retry = await pool.query(
+    'SELECT schedule_id FROM daily_schedule WHERE user_id = $1 AND schedule_date = $2',
+    [userId, date]
+  );
+
+  return retry.rows[0].schedule_id;
+
 };
 
 /* Time Box 저장 (Upsert 패턴 - Early Return으로 else 제거) */

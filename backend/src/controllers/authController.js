@@ -42,9 +42,14 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   const { email, password } = req.body;
 
-  // Validation
+  // Validation - 이메일 형식 체크
   if (!email || !password) {
     return res.status(400).json({ message: '이메일과 비밀번호를 입력해주세요.' });
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({ code: 'INVALID_EMAIL', message: '이메일 형식을 확인하세요.' });
   }
 
   try {
@@ -54,6 +59,12 @@ const login = async (req, res) => {
       ...result,
     });
   } catch (error) {
+    if (error.message === 'USER_NOT_FOUND') {
+      return res.status(401).json({ code: 'USER_NOT_FOUND', message: '해당 사용자를 찾을 수 없습니다.' });
+    }
+    if (error.message === 'INVALID_PASSWORD') {
+      return res.status(401).json({ code: 'INVALID_PASSWORD', message: '비밀번호를 확인하세요.' });
+    }
     return res.status(401).json({ message: error.message });
   }
 };

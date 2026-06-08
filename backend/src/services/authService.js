@@ -43,29 +43,26 @@ const register = async (email, password, nickname) => {
 3. JWT 토큰 발급
 */
 const login = async (email, password) => {
-  // Search User by Email
   const result = await pool.query(
     'SELECT * FROM users WHERE email = $1',
     [email]
   );
+
   if (result.rows.length === 0) {
-    throw new Error('이메일 또는 비밀번호가 올바르지 않습니다.');
+    throw new Error('USER_NOT_FOUND');
   }
 
   const user = result.rows[0];
 
-  // Validate Password
   const isValidPassword = await bcrypt.compare(password, user.password);
   if (!isValidPassword) {
-    throw new Error('이메일 또는 비밀번호가 올바르지 않습니다.');
+    throw new Error('INVALID_PASSWORD');
   }
 
-  // Issuance of JWT tokens
-  // JWT 토큰 만드는 함수
   const token = jwt.sign(
-    { userId: user.user_id, email: user.email }, // // 토큰 안에 담을 정보
-    process.env.JWT_SECRET, // 서명 키
-    { expiresIn: '7d' } // 7일 후 만료
+    { userId: user.user_id, email: user.email },
+    process.env.JWT_SECRET,
+    { expiresIn: '7d' }
   );
 
   return {

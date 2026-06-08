@@ -1,34 +1,109 @@
 // TimeBoxPage.jsx
-// 메인 화면 - 날짜 선택 + Time Box 그리드
+// 메인 화면 = 날짜 선택 + Time Box + Brain Dump + Priority Task
 
-import { useState } from 'react';
+// TimeBoxPage.jsx
+// 메인 화면 - DndContext로 Brain Dump → Time Box 드래그앤드롭 관리
+
+import { useState, useEffect, useRef } from 'react';
+import { DndContext, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import TimeBoxGrid from '../components/TimeBoxGrid';
+import BrainDump from '../components/BrainDump';
+import PriorityTask from '../components/PriorityTask';
+import api from '../services/api';
 
 function TimeBoxPage({ user, onLogout }) {
-  // 오늘 날짜를 기본값으로 설정 (YYYY-MM-DD 형식)
   const [selectedDate, setSelectedDate] = useState(
     new Date().toISOString().split('T')[0]
   );
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [dumps, setDumps] = useState([]);
+  const [activeDump, setActiveDump] = useState(null); // 클릭으로 선택된 Brain Dump 항목
+  const timeBoxGridRef = useRef(null);
+
+  const sensors = useSensors(useSensor(PointerSensor));
+
+  useEffect(() => {
+    const fetchDumps = async () => {
+      const response = await api.get(`/braindump?date=${selectedDate}`);
+      setDumps(response.data);
+    };
+
+    fetchDumps();
+  }, [selectedDate, refreshTrigger]);
+
+  const handleCheckedChange = () => {
+    setRefreshTrigger((prev) => prev + 1);
+  };
+
+  // 드래그앤드롭 완료 시
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+
+    if (!over) return;
+
+    const dump = active.data.current?.dump;
+    const cellIndex = parseInt(over.id.replace('cell-', ''));
+
+    if (!dump || isNaN(cellIndex)) return;
+
+    if (timeBoxGridRef.current) {
+      timeBoxGridRef.current.applyDump(cellIndex, dump.content, null);
+    }
+  };
 
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1>Time Box</h1>
-        <div>
-          <span>{user.nickname}님</span>
-          <button onClick={onLogout} style={{ marginLeft: '10px' }}>로그아웃</button>
+    <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h1>Time Box</h1>
+          <div>
+            <span>{user.nickname}님</span>
+            <button onClick={onLogout} style={{ marginLeft: '10px' }}>로그아웃</button>
+          </div>
+        </div>
+
+        <input
+          type="date"
+          value={selectedDate}
+          onChange={(e) => setSelectedDate(e.target.value)}
+          style={{ marginBottom: '30px' }}
+        />
+
+        {/* 활성화된 Brain Dump 항목 표시 */}
+        {activeDump && (
+          <div style={{ marginBottom: '10px', padding: '8px', backgroundColor: '#e8f4ff', borderRadius: '6px', fontSize: '14px' }}>
+            선택됨: <strong>{activeDump.content}</strong> — Time Box 칸을 클릭하거나 Ctrl/Shift 클릭으로 여러 칸에 적용하세요.
+            <button onClick={() => setActiveDump(null)} style={{ marginLeft: '10px' }}>취소</button>
+          </div>
+        )}
+
+        <div style={{ display: 'flex', gap: '40px' }}>
+          <div style={{ flex: 1 }}>
+            <TimeBoxGrid
+              ref={timeBoxGridRef}
+              selectedDate={selectedDate}
+              dumps={dumps}
+              activeDump={activeDump}
+            />
+          </div>
+          <div style={{ flex: 1 }}>
+            <BrainDump
+              selectedDate={selectedDate}
+              onCheckedChange={handleCheckedChange}
+              dumps={dumps}
+              setDumps={setDumps}
+              activeDump={activeDump}
+              setActiveDump={setActiveDump}
+            />
+            <hr style={{ margin: '20px 0' }} />
+            <PriorityTask
+              selectedDate={selectedDate}
+              refreshTrigger={refreshTrigger}
+            />
+          </div>
         </div>
       </div>
-
-      <input
-        type="date"
-        value={selectedDate}
-        onChange={(e) => setSelectedDate(e.target.value)}
-        style={{ marginBottom: '20px' }}
-      />
-
-      <TimeBoxGrid selectedDate={selectedDate} />
-    </div>
+    </DndContext>
   );
 }
 

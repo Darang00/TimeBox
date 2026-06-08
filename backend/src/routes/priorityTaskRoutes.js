@@ -12,5 +12,6 @@ router.delete('/dump/:dumpId', authMiddleware, priorityTaskController.deletePrio
 router.patch('/reorder', authMiddleware, priorityTaskController.updateTaskIndex);
 router.patch('/complete', authMiddleware, priorityTaskController.updateCompleted);
 router.patch('/max-priority', authMiddleware, priorityTaskController.updateMaxPriority);
+router.get('/max-priority', authMiddleware, priorityTaskController.getMaxPriority);
 
 module.exports = router;

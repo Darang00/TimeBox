@@ -99,10 +99,52 @@ const updateDumpCheck = async (userId, dumpId, isChecked) => {
     return result.rows[0];
   };
 
-// Brain Dump 항목 삭제
+/* Brain Dump 항목 삭제
 const deleteDump = async (dumpId) => {
   await pool.query('DELETE FROM brain_dump WHERE dump_id = $1', [dumpId]);
   return { success: true };
-};
+}; */
+
+/* Brain Dump 항목 삭제 (체크된 경우 priority_task도 함께 삭제)
+const deleteDump = async (dumpId) => {
+    // priority_task 먼저 삭제 (FK 제약 때문에 brain_dump보다 먼저)
+    await pool.query('DELETE FROM priority_task WHERE dump_id = $1', [dumpId]);
+    await pool.query('DELETE FROM brain_dump WHERE dump_id = $1', [dumpId]);
+    return { success: true };
+  }; */
+  
+ // Brain Dump 항목 삭제 (체크된 경우 priority_task도 함께 삭제)
+  const deleteDump = async (dumpId) => {
+    // priority_task에서 schedule_id 먼저 조회
+    const taskResult = await pool.query(
+      'SELECT schedule_id FROM priority_task WHERE dump_id = $1',
+      [dumpId]
+    );
+  
+    const scheduleId = taskResult.rows.length > 0 ? taskResult.rows[0].schedule_id : null;
+  
+    // priority_task 먼저 삭제 (FK 제약)
+    await pool.query('DELETE FROM priority_task WHERE dump_id = $1', [dumpId]);
+    await pool.query('DELETE FROM brain_dump WHERE dump_id = $1', [dumpId]);
+  
+    // priority_task 남은 항목 재채번
+    if (scheduleId) {
+      const remaining = await pool.query(
+        'SELECT dump_id FROM priority_task WHERE schedule_id = $1 ORDER BY task_index',
+        [scheduleId]
+      );
+  
+      await Promise.all(
+        remaining.rows.map((row, i) =>
+          pool.query(
+            'UPDATE priority_task SET task_index = $1 WHERE dump_id = $2',
+            [i + 1, row.dump_id]
+          )
+        )
+      );
+    }
+  
+    return { success: true };
+  };
 
 module.exports = { addDump, getDumps, updateDumpCheck, deleteDump };

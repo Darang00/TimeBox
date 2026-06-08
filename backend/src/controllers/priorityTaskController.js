@@ -90,4 +90,19 @@ const updateMaxPriority = async (req, res) => {
   return res.status(200).json(result);
 };
 
-module.exports = { getPriorityTasks, addPriorityTask, deletePriorityTaskByDumpId, updateTaskIndex, updateCompleted, updateMaxPriority };
+// max_priority 조회
+// GET /api/prioritytask/max-priority?date=2026-06-08
+const getMaxPriority = async (req, res) => {
+  const { date } = req.query;
+  const userId = req.user.userId;
+
+  if (!date) {
+    return res.status(400).json({ message: 'date는 필수입니다.' });
+  }
+
+  const result = await priorityTaskService.getMaxPriority(userId, date);
+
+  return res.status(200).json(result || { max_priority: 3 });
+};
+
+module.exports = { getPriorityTasks, addPriorityTask, deletePriorityTaskByDumpId, updateTaskIndex, updateCompleted, updateMaxPriority, getMaxPriority };

@@ -69,33 +69,41 @@ const getDumps = async (userId, date) => {
   return result.rows;
 };
 
-// Brain Dump 체크 상태 변경 (Big 3 선택/해제)
+// Brain Dump 체크 상태 변경 (Priority Task 선택/해제)
 const updateDumpCheck = async (userId, dumpId, isChecked) => {
     // 체크 시 현재 체크된 항목 수와 max_priority 비교
     if (isChecked) {
-      const countResult = await pool.query(
-        `SELECT COUNT(bd.dump_id) as checked_count, ds.max_priority
+      // dumpId로 해당 날짜의 schedule_id 조회
+      const scheduleResult = await pool.query(
+        `SELECT ds.schedule_id, ds.max_priority
          FROM brain_dump bd
          JOIN daily_schedule ds ON bd.schedule_id = ds.schedule_id
-         WHERE ds.user_id = $1 AND bd.is_checked = true
-         GROUP BY ds.max_priority`,
-        [userId]
+         WHERE bd.dump_id = $1`,
+        [dumpId]
       );
-  
-      // 체크된 항목이 있고 max_priority 이상이면 차단
-      if (countResult.rows.length > 0) {
-        const { checked_count, max_priority } = countResult.rows[0];
-        if (parseInt(checked_count) >= max_priority) {
+      
+      if (scheduleResult.rows.length > 0) {
+        const { schedule_id, max_priority } = scheduleResult.rows[0];
+      
+        // 해당 날짜에 체크된 항목 수 조회
+        const countResult = await pool.query(
+          'SELECT COUNT(*) as checked_count FROM brain_dump WHERE schedule_id = $1 AND is_checked = true',
+          [schedule_id]
+        );
+        
+        const checkedCount = parseInt(countResult.rows[0].checked_count);
+        
+        if (checkedCount >= max_priority) {
           return { error: `최대 ${max_priority}개까지만 선택할 수 있습니다.` };
         }
       }
     }
-  
+
     const result = await pool.query(
       'UPDATE brain_dump SET is_checked = $1 WHERE dump_id = $2 RETURNING dump_id, content, is_checked',
       [isChecked, dumpId]
     );
-  
+
     return result.rows[0];
   };
 
@@ -112,7 +120,7 @@ const deleteDump = async (dumpId) => {
     await pool.query('DELETE FROM brain_dump WHERE dump_id = $1', [dumpId]);
     return { success: true };
   }; */
-  
+
  // Brain Dump 항목 삭제 (체크된 경우 priority_task도 함께 삭제)
   const deleteDump = async (dumpId) => {
     // priority_task에서 schedule_id 먼저 조회

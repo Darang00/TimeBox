@@ -28,7 +28,11 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // 미들웨어 설정
-app.use(cors());          // 프론트엔드에서 API 호출 허용
+//app.use(cors());          // 프론트엔드에서 API 호출 허용
+app.use(cors({
+  origin: 'https://time-box-two.vercel.app',
+  credentials: true,
+}));
 app.use(express.json());  // JSON 요청 파싱
 
 // 라우터 연결

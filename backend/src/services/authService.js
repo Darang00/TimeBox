@@ -28,7 +28,7 @@ const register = async (email, password, nickname) => {
   // $1, $2, $3: PostgreSQL에서 파라미터 바인딩 방식
   // To prevent SQL injection attacks
   const result = await pool.query(
-    'INSERT INTO users (email, password, nickname) VALUES ($1, $2, $3) RETURNING user_id, email, nickname',
+    'INSERT INTO users (email, password, nickname, created_at) VALUES ($1, $2, $3, NOW()) RETURNING user_id, email, nickname, created_at',
     [email, hashedPassword, nickname]
   );
 

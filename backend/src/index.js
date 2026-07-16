@@ -46,6 +46,11 @@ app.get('/', (req, res) => {
   res.json({ message: 'TimeBox Server is running! ✅' });
 });
 
+// Cron job (cron-job.org) 콜드스타트 방지용 핑 엔드포인트
+app.get('/ping', (req, res) => {
+  res.status(200).send('ok');
+});
+
 // 서버 시작
 app.listen(PORT, () => {
   console.log(`서버 시작! 포트: ${PORT}`);

@@ -1,6 +1,6 @@
 // TimeBoxGrid.jsx
 // 24시간 x 30분 그리드 - Brain Dump 항목을 드래그앤드롭으로 적용
-
+import './TimeBoxGrid.css';
 import { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import api from '../services/api';
@@ -14,8 +14,8 @@ const COLORS = [
 
 function DroppableCell({ cell, content, color, onClick }) {
   const { setNodeRef, isOver } = useDroppable({ id: `cell-${cell.index}` });
-
-  const style = {
+  {/*
+    const style = {
     flex: 1,
     height: '28px',
     backgroundColor: isOver ? '#b3d4ff' : (color || '#f0f0f0'),
@@ -30,9 +30,17 @@ function DroppableCell({ cell, content, color, onClick }) {
     whiteSpace: 'nowrap',
     transition: 'background-color 0.1s',
   };
+  */}
+
+  // 색상 관련 값만 인라인으로 남김
+  const dynamicStyle = {
+    backgroundColor: isOver ? '#b3d4ff' : (color || '#f0f0f0'),
+    border: isOver ? '2px solid #4a9eff' : '1px solid #ddd',
+  };
+  
 
   return (
-    <div ref={setNodeRef} style={style} onClick={onClick}>
+    <div ref={setNodeRef} className="cell" style={dynamicStyle} onClick={onClick}>
       {content}
     </div>
   );
@@ -186,15 +194,19 @@ const TimeBoxGrid = forwardRef(function TimeBoxGrid({ selectedDate, dumps, activ
 
   return (
     <div>
+      {/*
       <p style={{ textAlign: 'right', color: 'gray', margin: '0 0 10px 0' }}>{saveStatus}</p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+      */}
+      <p className="saveStatus">{saveStatus}</p>
+      <div className="rows">
         {Array.from({ length: 24 }, (_, hour) => {
           const firstCell = cells[hour * 2];
           const secondCell = cells[hour * 2 + 1];
 
           return (
-            <div key={hour} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <span style={{ fontSize: '12px', color: 'gray', width: '40px', flexShrink: 0 }}>
+            <div key={hour} className="row">
+            <span className="hourLabel">
                 {String(hour).padStart(2, '0')}:00
               </span>
               <DroppableCell

@@ -22,7 +22,7 @@ import api from '../services/api';
 
 // 개별 Priority Task 항목 컴포넌트 (드래그 가능)
 function SortableItem({ task, onComplete }) {
-    const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
+    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
       id: task.dump_id,
     });
   
@@ -33,6 +33,23 @@ function SortableItem({ task, onComplete }) {
       alignItems: 'center',
       gap: '10px',
       marginBottom: '8px',
+      opacity: isDragging ? 0.6 : 1,        // 드래그 중인 항목 반투명 처리
+      boxShadow: isDragging ? '0 4px 12px rgba(0,0,0,0.15)' : 'none',
+      borderRadius: isDragging ? '8px' : '0',
+    };
+
+    const handleStyle = {
+      cursor: 'grab',
+      touchAction: 'none',
+      WebkitTouchCallout: 'none',
+      WebkitUserSelect: 'none',
+      userSelect: 'none',
+      WebkitUserDrag: 'none',
+      width: '10px',
+      height: '15px',
+      objectFit: 'contain',
+      transform: isDragging ? 'scale(1.3)' : 'scale(1)',  // 드래그 시작 시 핸들 확대
+      transition: 'transform 0.15s ease',
     };
   
     return (
@@ -43,16 +60,9 @@ function SortableItem({ task, onComplete }) {
           {...listeners}
           src={dragHandle}
           alt="드래그 핸들"
-          style={{
-            cursor: 'grab',
-            touchAction: 'none',
-            WebkitTouchCallout: 'none',   // iOS: 길게 누르면 뜨는 미리보기/저장 메뉴 차단
-
-            WebkitUserDrag: 'none',      // 사파리 계열 네이티브 이미지 드래그 차단
-            width: '10px',
-            height: '15px',
-            objectFit: 'contain',
-          }}
+          draggable={false}
+          style={handleStyle}
+          
         />
         <span>{task.task_index}.</span>
         <span style={{ flex: 1, textDecoration: task.is_completed ? 'line-through' : 'none' }}>

@@ -100,7 +100,7 @@ function TimeBoxPage({ user, onLogout }) {
           {/* activeDump 표시 */}
           {activeDump && (
             <div className="activeDumpBar">
-              <span>선택됨: <strong>{activeDump.content}</strong> — 칸을 클릭하거나 Shift 클릭으로 여러 칸에 적용</span>
+              <span>선택됨: <strong>{activeDump.content}</strong> — 칸을 클릭하거나 Shift를 누른 상태에서 여러 칸에 적용</span>
               <button className="cancelBtn" onClick={() => setActiveDump(null)}>취소</button>
             </div>
           )}

@@ -6,6 +6,7 @@ import {
   DndContext,
   closestCenter,
   PointerSensor,
+  TouchSensor,
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
@@ -35,8 +36,14 @@ function SortableItem({ task, onComplete }) {
   
     return (
       <div ref={setNodeRef} style={style}>
-        {/* 드래그 핸들만 listeners 적용 */}
-        <span {...attributes} {...listeners} style={{ cursor: 'grab', color: 'gray' }}>⠿</span>
+        {/* 드래그 핸들만 listeners 적용, touchAction: 'none'으로 터치 시 스크롤 대신 드래그 인식 */}
+        <span
+          {...attributes}
+          {...listeners}
+          style={{ cursor: 'grab', color: 'gray', touchAction: 'none' }}
+        >
+          ⠿
+        </span>
         <span>{task.task_index}.</span>
         <span style={{ flex: 1, textDecoration: task.is_completed ? 'line-through' : 'none' }}>
           {task.content}
@@ -53,7 +60,20 @@ function SortableItem({ task, onComplete }) {
 function PriorityTask({ selectedDate, refreshTrigger }) {
   const [tasks, setTasks] = useState([]);
 
-  const sensors = useSensors(useSensor(PointerSensor));
+  //const sensors = useSensors(useSensor(PointerSensor));
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // 마우스: 8px 이상 움직여야 드래그 시작
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 200,    // 터치: 200ms 눌러 버텨야 드래그 시작 (짧은 탭/스크롤과 구분)
+        tolerance: 5,  // 그 사이 5px 이내 흔들림은 허용
+      },
+    }),
+  );
 
   // 날짜 바뀌거나 Brain Dump 체크 바뀌면 다시 불러오기
   useEffect(() => {
@@ -117,7 +137,7 @@ function PriorityTask({ selectedDate, refreshTrigger }) {
       {tasks.length === 0 && (
         <p style={{ color: 'gray' }}>Brain Dump에서 항목을 체크하면 여기에 표시됩니다.</p>
       )}
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd} autoScroll={{ threshold: { x: 0, y: 0.2 } }}>
         <SortableContext items={tasks.map((t) => t.dump_id)} strategy={verticalListSortingStrategy}>
           {tasks.map((task) => (
             <SortableItem key={task.dump_id} task={task} onComplete={handleComplete} />

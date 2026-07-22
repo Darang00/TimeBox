@@ -46,6 +46,10 @@ function SortableItem({ task, onComplete }) {
           style={{
             cursor: 'grab',
             touchAction: 'none',
+            WebkitTouchCallout: 'none',   // iOS: 길게 누르면 뜨는 미리보기/저장 메뉴 차단
+            WebkitUserSelect: 'none',     // 선택/드래그 방지
+            userSelect: 'none',
+            WebkitUserDrag: 'none',      // 사파리 계열 네이티브 이미지 드래그 차단
             width: '10px',
             height: '15px',
             objectFit: 'contain',

@@ -2,6 +2,7 @@
 // Priority Task 컴포넌트 - 체크된 항목 표시 + 드래그앤드롭 순서 변경
 
 import { useState, useEffect } from 'react';
+import dragHandle from '../assets/drag-handle.png';
 import {
   DndContext,
   closestCenter,
@@ -37,13 +38,19 @@ function SortableItem({ task, onComplete }) {
     return (
       <div ref={setNodeRef} style={style}>
         {/* 드래그 핸들만 listeners 적용, touchAction: 'none'으로 터치 시 스크롤 대신 드래그 인식 */}
-        <span
+        <img
           {...attributes}
           {...listeners}
-          style={{ cursor: 'grab', color: 'gray', touchAction: 'none' }}
-        >
-          ⠿
-        </span>
+          src={dragHandle}
+          alt="드래그 핸들"
+          style={{
+            cursor: 'grab',
+            touchAction: 'none',
+            width: '10px',
+            height: '15px',
+            objectFit: 'contain',
+          }}
+        />
         <span>{task.task_index}.</span>
         <span style={{ flex: 1, textDecoration: task.is_completed ? 'line-through' : 'none' }}>
           {task.content}

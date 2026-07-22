@@ -32,7 +32,7 @@ function DraggableDump({ dump, checkedCount, maxPriority, onCheck, onDelete, act
   
     return (
       <div ref={setNodeRef} style={style}>
-        <span {...attributes} {...listeners} style={{ cursor: 'grab', color: 'gray' }}>⠿</span>
+        
         <input
           type="checkbox"
           checked={dump.is_checked}

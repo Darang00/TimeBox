@@ -1,0 +1,105 @@
+.dumpHeader {
+    position: relative;   /* select의 위치 기준점 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+
+  .dumpHeader h2 {
+    margin: 0;
+  }
+  
+  .maxPrioritySelect {
+    position: absolute;   /* 흐름에서 빠짐 → 가운데 정렬 계산에서 제외됨 */
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    padding: 4px 8px;
+  }
+  
+  .inputRow {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .textInput {
+    flex: 1;
+    min-width: 0; /* flex 자식이 내용물 때문에 넘치는 것 방지 */
+    padding: 6px 8px;
+    font-size: 14px;
+    box-sizing: border-box;
+  }
+  
+  .addBtn {
+    padding: 6px 14px;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+  
+  .dumpItem {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+    cursor: pointer;
+    border-radius: 4px;
+    padding: 2px 4px;
+  }
+  
+  .dumpCheckbox {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+  
+  .dumpContent {
+    flex: 1;
+    cursor: pointer;
+    min-width: 0;
+    overflow-wrap: break-word;
+  }
+  
+  .deleteBtn {
+    padding: 4px 10px;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+  
+  /* ===== 모바일 (≤480px): 터치 타겟 확대 ===== */
+  @media (max-width: 480px) {
+    .header h2 {
+      font-size: 18px;
+    }
+  
+    .maxPrioritySelect {
+      font-size: 13px;
+      padding: 6px 8px; /* 셀렉트도 누르기 쉽게 */
+    }
+  
+    .textInput {
+      font-size: 16px; /* 16px 미만이면 iOS Safari가 자동 확대(zoom)하는 걸 방지 */
+      padding: 8px 10px;
+    }
+  
+    .addBtn {
+      padding: 8px 16px;
+      font-size: 14px;
+    }
+  
+    .dumpCheckbox {
+      width: 22px;
+      height: 22px; /* 터치 권장 최소 크기(~24px)에 가깝게 */
+    }
+  
+    .dumpContent {
+      font-size: 14px;
+    }
+  
+    .deleteBtn {
+      padding: 6px 12px;
+      font-size: 13px;
+    }
+  }

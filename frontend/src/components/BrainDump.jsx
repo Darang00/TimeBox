@@ -3,7 +3,7 @@
 
 // BrainDump.jsx
 // Brain Dump 컴포넌트 - 자유 텍스트 입력 + 체크박스 + 드래그 가능
-
+import './BrainDump.css';
 import { useState, useEffect } from 'react';
 import { useDraggable } from '@dnd-kit/core';
 import api from '../services/api';
@@ -16,7 +16,8 @@ function DraggableDump({ dump, checkedCount, maxPriority, onCheck, onDelete, act
     });
   
     const isActive = activeDump?.dump_id === dump.dump_id;
-  
+    
+    {/*
     const style = {
       transform: transform ? `translate(${transform.x}px, ${transform.y}px)` : undefined,
       opacity: isDragging ? 0.5 : 1,
@@ -29,25 +30,33 @@ function DraggableDump({ dump, checkedCount, maxPriority, onCheck, onDelete, act
       borderRadius: '4px',
       padding: '2px 4px',
     };
+   */}
+    
+    // 동적인 값만 인라인으로 남김
+    const dynamicStyle = {
+      transform: transform ? `translate(${transform.x}px, ${transform.y}px)` : undefined,
+      opacity: isDragging ? 0.5 : 1,
+      backgroundColor: isActive ? '#e8f4ff' : 'transparent',
+    };
   
     return (
-      <div ref={setNodeRef} style={style}>
-        
-        <input
-          type="checkbox"
-          checked={dump.is_checked}
-          disabled={!dump.is_checked && checkedCount >= maxPriority}
-          onChange={() => onCheck(dump)}
-        />
-        {/* 항목 클릭 시 activeDump로 설정 */}
-        <span
-          style={{ flex: 1, cursor: 'pointer', fontWeight: isActive ? 'bold' : 'normal' }}
-          onClick={() => setActiveDump(isActive ? null : dump)}
-        >
-          {dump.content}
-        </span>
-        <button onClick={() => onDelete(dump)}>삭제</button>
-      </div>
+      <div ref={setNodeRef} className="dumpItem" style={dynamicStyle}>
+      <input
+        className="dumpCheckbox"
+        type="checkbox"
+        checked={dump.is_checked}
+        disabled={!dump.is_checked && checkedCount >= maxPriority}
+        onChange={() => onCheck(dump)}
+      />
+      <span
+        className="dumpContent"
+        style={{ fontWeight: isActive ? 'bold' : 'normal' }}
+        onClick={() => setActiveDump(isActive ? null : dump)}
+      >
+        {dump.content}
+      </span>
+      <button className="deleteBtn" onClick={() => onDelete(dump)}>삭제</button>
+    </div>
     );
   }
 
@@ -132,9 +141,10 @@ function BrainDump({ selectedDate, onCheckedChange, dumps, setDumps, activeDump,
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+      <div className="dumpHeader">
         <h2>Brain Dump</h2>
-        <select
+        <select 
+          className="maxPrioritySelect"
           value={maxPriority}
           onChange={(e) => handleMaxPriorityChange(Number(e.target.value))}
         >
@@ -144,7 +154,7 @@ function BrainDump({ selectedDate, onCheckedChange, dumps, setDumps, activeDump,
         </select>
       </div>
 
-      <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+      <div style={{ display: 'flex', gap: '10px', marginBottom: '10px'}}>
         <input
           type="text"
           value={input}

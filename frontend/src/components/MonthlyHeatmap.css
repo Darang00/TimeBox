@@ -1,0 +1,149 @@
+.heatmapContainer {
+    width: 100%;
+  }
+  
+  .heatmapNav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  
+  .heatmapNavBtn {
+    padding: 6px 12px;
+    font-size: 16px;
+    background: transparent;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    color: #666;
+    cursor: pointer;
+  }
+  
+  .heatmapMonthLabel {
+    font-size: 18px;
+    font-weight: 700;
+    color: #333;
+    min-width: 120px;
+    text-align: center;
+  }
+  
+  .heatmapWeekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+  
+  .heatmapWeekday {
+    text-align: center;
+    font-size: 12px;
+    color: #999;
+    font-weight: 600;
+  }
+  
+  .heatmapGrid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+  }
+  
+  .heatmapCell {
+    aspect-ratio: 1;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    color: #555;
+    cursor: pointer;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    transition: transform 0.1s;
+    box-sizing: border-box;
+  }
+  
+  .heatmapCell:hover {
+    transform: scale(1.06);
+  }
+  
+  .heatmapCell.empty {
+    cursor: default;
+    border: none;
+  }
+  
+  .heatmapCell.today {
+    border: 2px solid #4facfe;
+  }
+  
+  /* 달성률 4단계 색상 (GitHub 잔디 스타일) */
+  .heatmapCell.rate-none {
+    /*background: #f0f0f0;*/
+    color: #bbb;
+  }
+  
+  .heatmapCell.rate-0 {
+    /*background: #ffe3e0;*/
+    background: #deecfc;
+  }
+  
+  .heatmapCell.rate-low {
+    /*background: #ffc4bd;*/
+    background: #c2e0fe;
+  }
+  
+  .heatmapCell.rate-mid {
+    /*background: #ff8f80; */
+    background: #61affe;
+    color: white;
+  }
+  
+  .heatmapCell.rate-high {
+    /*background: #ff5c47; */
+    background: #2f96fc;
+    color: white;
+  }
+  
+  .heatmapCell.rate-full {
+    /*background: #e63b2e;*/
+    background: #016bd5;
+    color: white;
+    font-weight: 700;
+  }
+  
+  .heatmapLegend {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    margin-top: 16px;
+    font-size: 12px;
+    color: #999;
+  }
+  
+  .heatmapLegendSwatch {
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+  }
+  
+  /* ===== 모바일 (≤480px) ===== */
+  @media (max-width: 480px) {
+    .heatmapMonthLabel {
+      font-size: 16px;
+      min-width: 100px;
+    }
+  
+    .heatmapGrid,
+    .heatmapWeekdays {
+      gap: 4px;
+    }
+  
+    .heatmapCell {
+      font-size: 11px;
+      border-radius: 6px;
+    }
+  
+    .heatmapWeekday {
+      font-size: 10px;
+    }
+  }

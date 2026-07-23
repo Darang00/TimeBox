@@ -20,6 +20,7 @@ const authRoutes = require('./routes/authRoutes');           // Regarding Sign i
 const timeboxRoutes = require('./routes/timeboxRoutes');     // Regarding Time Box
 const brainDumpRoutes = require('./routes/brainDumpRoutes'); // Regarding Brain Dump
 const priorityTaskRoutes = require('./routes/priorityTaskRoutes');  // Regarding prioriyTask
+const calendarRoutes = require('./routes/calendarRoutes'); // Regarding calendar
 
 // Express 앱 생성
 const app = express();
@@ -43,6 +44,7 @@ app.use('/api/auth', authRoutes);            // Regarding Sign in, Sign up
 app.use('/api/timebox', timeboxRoutes);      // Regarding Time Box
 app.use('/api/braindump', brainDumpRoutes);  // Regarding Brain Dump
 app.use('/api/prioritytask', priorityTaskRoutes);    // Regarding Priority Task
+app.use('/api/calendar', calendarRoutes);    // Regarding calendar
 
 // 서버 상태 확인용 API
 app.get('/', (req, res) => {

@@ -11,8 +11,10 @@ import BrainDump from '../components/BrainDump';
 import PriorityTask from '../components/PriorityTask';
 import api from '../services/api';
 import './TimeBoxPage.css';
+import MonthlyHeatmap from '../components/MonthlyHeatmap';
 
 function TimeBoxPage({ user, onLogout }) {
+  const [activeTab, setActiveTab] = useState('daily'); // 'daily' | 'calendar' 탭
   const [selectedDate, setSelectedDate] = useState(
     new Date().toISOString().split('T')[0]
   );
@@ -67,47 +69,67 @@ function TimeBoxPage({ user, onLogout }) {
         </div>
 
         <div className="content">
-          {/* 날짜 선택 */}
-          <div className="dateBar">
+          <div className="tabBar">
             <button
-              onClick={() => {
-                const prev = new Date(selectedDate);
-                prev.setDate(prev.getDate() - 1);
-                setSelectedDate(prev.toISOString().split('T')[0]);
-              }}
-              className="navBtn"
+              className={`tabBtn ${activeTab === 'daily' ? 'active' : ''}`}
+              onClick={() => setActiveTab('daily')}
             >
-              ‹
+              Daily
             </button>
-            <input
-              type="date"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              className="dateInput"
-            />
             <button
-              onClick={() => {
-                const next = new Date(selectedDate);
-                next.setDate(next.getDate() + 1);
-                setSelectedDate(next.toISOString().split('T')[0]);
-              }}
-              className="navBtn"
+              className={`tabBtn ${activeTab === 'calendar' ? 'active' : ''}`}
+              onClick={() => setActiveTab('calendar')}
             >
-              ›
+              Calendar
             </button>
           </div>
 
-          {/* activeDump 표시 */}
-          {activeDump && (
-            <div className="activeDumpBar">
-              <span>선택됨: <strong>{activeDump.content}</strong> — 칸을 클릭하거나 Shift를 누른 상태에서 여러 칸에 적용</span>
-              <button className="cancelBtn" onClick={() => setActiveDump(null)}>취소</button>
-            </div>
-          )}
+          {activeTab === 'daily' && (
+            <>
+              {/* 기존 dateBar, activeDump 표시, grid 전부 그대로 이 안에 */}
+              {/* 날짜 선택 */}
+              <div className="dateBar">
+                <button
+                  onClick={() => {
+                    const prev = new Date(selectedDate);
+                    prev.setDate(prev.getDate() - 1);
+                    setSelectedDate(prev.toISOString().split('T')[0]);
+                  }}
+                  className="navBtn"
+                >
+                  ‹
+                </button>
+                <input
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                  className="dateInput"
+                />
+                <button
+                  onClick={() => {
+                    const next = new Date(selectedDate);
+                    next.setDate(next.getDate() + 1);
+                    setSelectedDate(next.toISOString().split('T')[0]);
+                  }}
+                  className="navBtn"
+                >
+                  ›
+                </button>
+              </div>
 
-          {/* 메인 그리드 */}
+              {/* activeDump 표시 */}
+              {activeDump && (
+                <div className="activeDumpBar">
+                  <span>선택됨: <strong>{activeDump.content}</strong> — 칸을 클릭하거나 Shift를 누른 상태에서 여러 칸에 적용</span>
+                  <button className="cancelBtn" onClick={() => setActiveDump(null)}>취소</button>
+                </div>
+              )}
+
+              {/* 메인 그리드 */}
           <div className="grid">
             {/* 왼쪽: Time Box */}
+            
+
             <div className="leftPanel">
               <TimeBoxGrid
                 ref={timeBoxGridRef}
@@ -137,6 +159,17 @@ function TimeBoxPage({ user, onLogout }) {
               </div>
             </div>
           </div>
+
+            </>
+          )}
+          {activeTab === 'calendar' && (
+            <MonthlyHeatmap
+              onDateClick={(date) => {
+                setSelectedDate(date);
+                setActiveTab('daily');
+              }}
+            />
+          )}
         </div>
       </div>
     </DndContext>

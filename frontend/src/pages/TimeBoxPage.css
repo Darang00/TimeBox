@@ -3,6 +3,41 @@
     min-height: 100vh;
     background: linear-gradient(160deg, #e0f7fa 0%, #e3f2fd 50%, #f3e5f5 100%);
   }
+
+  .tabBar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  
+  .tabBtn {
+    padding: 8px 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.6);
+    color: #666;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  
+  .tabBtn.active {
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    color: white;
+    border-color: transparent;
+  }
+  
+  @media (max-width: 480px) {
+    .tabBar {
+      margin-bottom: 16px;
+    }
+  
+    .tabBtn {
+      padding: 6px 16px;
+      font-size: 13px;
+    }
+  }
   
   .header {
     background: rgba(255, 255, 255, 0.8);

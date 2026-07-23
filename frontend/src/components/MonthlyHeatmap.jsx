@@ -123,7 +123,7 @@ function MonthlyHeatmap({ onDateClick }) {
         <span className="heatmapLegendSwatch" style={{ background: '#deecfc' }} />
         <span className="heatmapLegendSwatch" style={{ background: '#c2e0fe' }} />
         <span className="heatmapLegendSwatch" style={{ background: '#61affe' }} />
-        <span className="heatmapLegendSwatch" style={{ background: '#2f96fc' }} />
+        <span className="heatmapLegendSwatch" style={{ background: '#0f84fa' }} />
         <span className="heatmapLegendSwatch" style={{ background: '#016bd5' }} />
         <span>높음</span>
       </div>
